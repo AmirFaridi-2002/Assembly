@@ -1,0 +1,16 @@
+
+
+part2:     file format elf64-x86-64
+
+SYMBOL TABLE:
+0000000000402000 l       .data	0000000000000000 passmess 	; The password of this part is:\t
+000000000040201f l       .data	0000000000000000 pass   	; I_hate_assembly\n
+0000000000402030 l       .data	0000000000000000 mess1 		; checking your pass\n
+0000000000402044 l       .data	0000000000000000 Error 		; Error\n
+000000000040204b l       .data	0000000000000000 filename 	; part2.txt
+0000000000402055 l       .data	0000000000000000 fd
+000000000040205d l       .data	0000000000000000 char1		; u
+000000000040205e l       .data	0000000000000000 char2		; r
+000000000040205f l       .data	0000000000000000 char3		; space
+0000000000402060 l       .data	0000000000000000 char4		; a
+0000000000402064 l       .bss	0000000000000000 buff

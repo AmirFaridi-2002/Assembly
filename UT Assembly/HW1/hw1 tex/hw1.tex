@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[all]{xy}
+
+
+\usepackage{amsmath,amsthm,amssymb,color,latexsym}
+\usepackage{geometry}        
+\geometry{letterpaper}    
+\usepackage{graphicx}
+
+\newtheorem{problem}{Problem}
+
+\newenvironment{solution}[1][\it{Solution}]{\textbf{#1. } }{}
+
+
+\begin{document}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.1\textwidth]{logo.png}
+\end{figure}
+
+\noindent  Assembly language \hfill Homework 1\\
+Amir Faridi - 610300087
+
+\hrulefill
+
+
+\begin{problem}
+Swap two numbers using only xor operation.
+\end{problem}
+\begin{solution}
+    Let's assume that we have our numbers in the registers \texttt{ax} and \texttt{bx}.
+    \begin{verbatim}
+        xor ax, bx
+        xor bx, ax
+        xor ax, bx
+    \end{verbatim}
+
+    After the first line, the value of \texttt{ax} would be a binary number where the bits are 1 if the corresponding bits of \texttt{ax} and \texttt{bx} are different and 0 if they are the same (we call this number \texttt{diff-bits}).
+    Now xoring \texttt{bx} with \texttt{ax} would give us the value of \texttt{ax}. Now we have the value of \texttt{ax} in \texttt{bx} and the \texttt{diff-bits} stored in \texttt{ax}.
+    Finally, xoring \texttt{ax} with \texttt{bx} would give us the value of \texttt{bx} stored in \texttt{ax}.
+\end{solution} 
+
+\begin{problem}
+    What are the different types of BUSes. Explain each of them.
+\end{problem}
+\begin{solution}
+    \begin{itemize}
+        \item \textbf{Data Bus:} The data bus transfers actual data between the CPU and the other components. The width of the data bus determines the number of bits that can be transferred at a time. For example, a 32-bit data bus can transfer 32 bits at a time. Data buses are bidirectional.
+        \item \textbf{Address Bus:} The address bus is unidirectional (from CPU to memory) and is used to transfer the address of the memory location that the CPU wants to read from or write to. The width of the address bus determines the maximum amount of memory that can be addressed. For example, a 32-bit address bus can address up to 4GB of memory.
+        \item \textbf{Control Bus:} The control bus is used to transfer control signals between the CPU and the other components. These signals include read/write signals, interrupt signals, clock signals, etc. The control bus is bidirectional (not completely bidirectional as said in the slides, its lines behave differently).
+    \end{itemize}
+\end{solution}
+
+\begin{problem}
+    Define the following registers and explain their usage: \texttt{ax}, \texttt{bx}, \texttt{cx}, \texttt{dx}, \texttt{si}, \texttt{di}, \texttt{ip}, \texttt{sp}, \texttt{bp}.
+\end{problem}
+\begin{solution}
+    
+\end{solution}
+    \begin{itemize}
+        \item \texttt{ax}: The \texttt{ax} register is the accumulator register. It is used for arithmetic and logic operations. It is also used to store the return value of a function.
+        \item \texttt{bx}: The \texttt{bx} register is the base register. It is used as a base pointer for memory access. It is also used as a counter in some instructions.
+        \item \texttt{cx}: The \texttt{cx} register is the count register. It is used as a counter in loop instructions.
+        \item \texttt{dx}: The \texttt{dx} register is the destinations register. It acts as the destination in I/O operations. \texttt{ax, bx, cx, dx} registers can be used as two 8-bit registers or one 16-bit register.
+        \item \texttt{si, di}: The \texttt{si} and \texttt{di} registers are the source and destination index registers. They are used as pointers for string operations.
+        \item \texttt{ip}: The \texttt{ip} register is the instruction pointer. It holds the address of the next instruction to be executed.
+        \item \texttt{sp}: The \texttt{sp} register is the stack pointer. It holds the address of the top of the stack.
+        \item \texttt{bp}: The \texttt{bp} register is the base pointer. It is used as a base pointer for memory access in the stack.
+    \end{itemize}
+\end{document}

@@ -1,0 +1,422 @@
+section .data
+    sys_read        equ     0
+    sys_write       equ     1
+    sys_open        equ     2
+    sys_close       equ     3
+    sys_lseek       equ     8
+    sys_create      equ     85
+    sys_unlink      equ     87
+    sys_mkdir       equ     83
+    sys_makenewdir  equ     0q777
+    sys_mmap        equ     9
+    sys_mumap       equ     11
+    sys_brk         equ     12
+    sys_exit        equ     60
+    stdin           equ     0
+    stdout          equ     1
+    stderr          equ     3
+
+	PROT_NONE	    equ     0x0
+    PROT_READ       equ     0x1
+    PROT_WRITE      equ     0x2
+    MAP_PRIVATE     equ     0x2
+    MAP_ANONYMOUS   equ     0x20
+    O_DIRECTORY     equ     0q0200000
+    O_RDONLY        equ     0q000000
+    O_WRONLY        equ     0q000001
+    O_RDWR          equ     0q000002
+    O_CREAT         equ     0q000100
+    O_APPEND        equ     0q002000
+    BEG_FILE_POS    equ     0
+    CURR_POS        equ     1
+    END_FILE_POS    equ     2
+    
+    sys_IRUSR       equ     0q400      
+    sys_IWUSR       equ     0q200      
+
+    NL              equ   0xA
+    Space           equ   0x20
+    Tab             equ   0x9
+
+
+
+
+section .text
+    PRINT_NEWLINE:                        
+        push   rax
+        mov    rax, NL
+        call   PUTC
+        pop    rax
+        ret
+
+    PUTC:	                              
+        push   rcx
+        push   rdx
+        push   rsi
+        push   rdi 
+        push   r11 
+
+        push   ax
+        mov    rsi, rsp    
+        mov    rdx, 1      
+        mov    rax, sys_write
+        mov    rdi, stdout 
+        syscall
+        pop    ax
+
+        pop    r11
+        pop    rdi
+        pop    rsi
+        pop    rdx
+        pop    rcx
+        ret
+
+    PRINT_NUMBER:
+        push   rax
+        push   rbx
+        push   rcx
+        push   rdx
+
+        sub    rdx, rdx
+        mov    rbx, 10 
+        sub    rcx, rcx
+        cmp    rax, 0
+        jge    w_Again
+        push   rax 
+        mov    al, '-'
+        call   PUTC
+        pop    rax
+        neg    rax
+
+    w_Again:                             
+        cmp    rax, 9	
+        jle    c_End
+        div    rbx
+        push   rdx
+        inc    rcx
+        sub    rdx, rdx
+        jmp    w_Again
+
+    c_End:                               
+        add    al, 0x30
+        call   PUTC
+        dec    rcx
+        jl     w_End
+        pop    rax
+        jmp    c_End
+
+    w_End:                                
+        pop    rdx
+        pop    rcx
+        pop    rbx
+        pop    rax
+        ret
+
+    
+
+    PRINT_STRING:
+        push    rax
+        push    rcx
+        push    rsi
+        push    rdx
+        push    rdi
+
+        mov     rdi, rsi
+        call    GetStrlen
+        mov     rax, sys_write  
+        mov     rdi, stdout
+        syscall 
+
+        pop     rdi
+        pop     rdx
+        pop     rsi
+        pop     rcx
+        pop     rax
+        ret
+    
+    GetStrlen:
+        push    rbx
+        push    rcx
+        push    rax  
+
+        xor     rcx, rcx
+        not     rcx
+        xor     rax, rax
+        cld
+                repne   scasb
+        not     rcx
+        lea     rdx, [rcx -1]  
+
+        pop     rax
+        pop     rcx
+        pop     rbx
+        ret
+
+    GETC:
+        push   rcx
+        push   rdx
+        push   rsi
+        push   rdi 
+        push   r11 
+
+        
+        sub    rsp, 1
+        mov    rsi, rsp
+        mov    rdx, 1
+        mov    rax, sys_read
+        mov    rdi, stdin
+        syscall
+        mov    al, [rsi]
+        add    rsp, 1
+
+        pop    r11
+        pop    rdi
+        pop    rsi
+        pop    rdx
+        pop    rcx
+
+        ret
+
+    READ_NUMBER:
+        push   rcx
+        push   rbx
+        push   rdx
+
+        mov    bl,0
+        mov    rdx, 0
+
+    r_Again:
+        xor    rax, rax
+        call   GETC
+        cmp    al, '-'
+        jne    s_Again
+        mov    bl,1  
+        jmp    r_Again
+    
+    s_Again:
+        cmp    al, NL
+        je     r_End
+        cmp    al, ' '
+        je     r_End
+        sub    rax, 0x30
+        imul   rdx, 10
+        add    rdx,  rax
+        xor    rax, rax
+        call   GETC
+        jmp    s_Again
+
+    r_End:
+        mov    rax, rdx 
+        cmp    bl, 0
+        je     s_End
+        neg    rax 
+
+    s_End:  
+        pop    rdx
+        pop    rbx
+        pop    rcx
+        ret
+
+
+section .text
+    global _start
+
+
+_start:
+    mov rsi, buffer
+    xor rcx, rcx
+    read_buffer:
+        call GETC
+        cmp al, NL
+        je read_N
+        mov [rsi], al
+        inc rsi
+        inc rcx
+        jmp read_buffer
+    
+    read_N:
+        mov byte [rsi], 0
+        call READ_NUMBER
+        mov [N], rax
+        mov rcx, [N]    ; number of queries
+        cmp rcx, 0
+        je done
+
+    read_AB:
+        mov rsi, A
+        A_loop:
+            call GETC
+            cmp al, Space
+            je A_end
+            mov [rsi], al
+            inc rsi
+            jmp A_loop
+        
+        A_end:
+            mov byte [rsi], 0
+            mov rsi, B
+        B_loop:
+            call GETC
+            cmp al, NL
+            je B_end
+            mov [rsi], al
+            inc rsi
+            jmp B_loop
+
+        B_end:
+            mov byte [rsi], 0
+            call search_begin
+        loop read_AB    ; repeat rcx times
+
+    done:
+        mov rsi, buffer
+        call PRINT_STRING
+    ; call PRINT_NEWLINE
+
+    Exit:
+        mov     rax, sys_exit
+        xor     rdi, rdi
+        syscall
+
+    search_begin:        ; replace one occurence of A with B in buffer
+        push rax
+        push rbx
+        push rcx
+        push rdx
+        push rsi
+        push rdi
+
+        mov rsi, buffer
+        mov rdi, A
+
+        ; search the first occurence of A in buffer
+        search:
+            cmp byte [rsi], 0
+            je notFound
+            push rsi
+            mov rdi, A
+            cmp_loop:
+                mov al, [rsi]
+                mov ah, [rdi]
+                cmp ah, 0
+                je found
+
+                cmp al, ah
+                jne notEqual
+
+                inc rsi
+                inc rdi
+                jmp cmp_loop
+
+            notEqual:
+                pop rsi
+                inc rsi
+                jmp search
+
+            found:
+                push rsi
+                pop rdi
+                pop rsi    
+                dec rdi    ; starting at rsi and ending at rdi, is the occurence of A
+                call replace
+                push rsi
+                mov rsi, buffer
+                ; call PRINT_STRING
+                ; call PRINT_NEWLINE
+                pop rsi
+                call search_begin
+
+        notFound:
+            pop rdi
+            pop rsi
+            pop rdx
+            pop rcx
+            pop rbx
+            pop rax
+            ret
+
+
+
+
+    replace:
+        push rax
+        push rbx
+        push rcx
+        push rdx
+
+        mov rbx, temp
+        mov rcx, buffer
+
+        ; copy the part of buffer before the occurence of A to temp
+        copy1:
+            cmp rcx, rsi
+            je copy2_begin
+            mov al, [rcx]
+            mov [rbx], al
+            inc rbx
+            inc rcx
+            jmp copy1
+
+        copy2_begin:
+            mov rcx, B
+            copy2:
+                mov al, [rcx]
+                cmp al, 0
+                je copy3_begin
+                mov [rbx], al
+                inc rbx
+                inc rcx
+                jmp copy2
+
+        copy3_begin:
+            mov rcx, rdi
+            inc rcx
+            copy3:
+                mov al, [rcx]
+                mov [rbx], al
+                cmp al, 0
+                je done_replacing
+                inc rbx
+                inc rcx
+                jmp copy3
+
+        done_replacing:
+            ; move the content of temp to buffer
+            mov rcx, temp
+            mov rbx, buffer
+            xor rdx, rdx
+            copy4:
+                mov al, [rcx]
+                mov [rbx], al
+                cmp al, 0
+                je done_copying
+                inc rcx
+                inc rbx
+                inc rdx
+                jmp copy4
+
+        done_copying:
+            pop rdx
+            pop rcx
+            pop rbx
+            pop rax
+            ret
+
+
+
+    section .data
+        ; temp          :        times 1000 db 0 
+        ; buffer        :        db "aa", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+        ; A             :        db "aa", 0
+
+        ; B             :        db "b", 0
+
+        temp            : times 100000 db 0
+        buffer          : times 100000 db 0
+
+        A               : times 100000 db 0
+
+        B               : times 100000 db 0
+
+        N               : dq 0

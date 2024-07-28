@@ -1,0 +1,144 @@
+
+part2:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	48 be 30 20 40 00 00 	movabs $0x402030,%rsi
+  401007:	00 00 00 
+  40100a:	e8 30 01 00 00       	call   40113f <printString>
+
+000000000040100f <ever_loop>:
+  40100f:	48 bf 4b 20 40 00 00 	movabs $0x40204b,%rdi
+  401016:	00 00 00 
+  401019:	e8 f8 00 00 00       	call   401116 <open_file>
+  40101e:	48 83 f8 fe          	cmp    $0xfffffffffffffffe,%rax
+  401022:	74 eb                	je     40100f <ever_loop>
+  401024:	48 83 f8 00          	cmp    $0x0,%rax
+  401028:	0f 8e c0 00 00 00    	jle    4010ee <error>
+  40102e:	48 89 04 25 55 20 40 	mov    %rax,0x402055
+  401035:	00 
+  401036:	48 be 64 20 40 00 00 	movabs $0x402064,%rsi
+  40103d:	00 00 00 
+  401040:	48 8b 3c 25 55 20 40 	mov    0x402055,%rdi
+  401047:	00 
+  401048:	ba 05 00 00 00       	mov    $0x5,%edx
+  40104d:	e8 d7 00 00 00       	call   401129 <read_file>
+  401052:	48 83 f8 04          	cmp    $0x4,%rax
+  401056:	75 64                	jne    4010bc <close_and_try>
+  401058:	48 31 db             	xor    %rbx,%rbx
+  40105b:	8a 1c 25 64 20 40 00 	mov    0x402064,%bl
+  401062:	3a 1c 25 5d 20 40 00 	cmp    0x40205d,%bl
+  401069:	75 30                	jne    40109b <delete_and_try>
+  40106b:	8a 1c 25 65 20 40 00 	mov    0x402065,%bl
+  401072:	3a 1c 25 5e 20 40 00 	cmp    0x40205e,%bl
+  401079:	75 20                	jne    40109b <delete_and_try>
+  40107b:	8a 1c 25 66 20 40 00 	mov    0x402066,%bl
+  401082:	3a 1c 25 5f 20 40 00 	cmp    0x40205f,%bl
+  401089:	75 10                	jne    40109b <delete_and_try>
+  40108b:	8a 1c 25 67 20 40 00 	mov    0x402067,%bl
+  401092:	3a 1c 25 60 20 40 00 	cmp    0x402060,%bl
+  401099:	74 33                	je     4010ce <after_ever_loop>
+
+000000000040109b <delete_and_try>:
+  40109b:	48 8b 3c 25 55 20 40 	mov    0x402055,%rdi
+  4010a2:	00 
+  4010a3:	e8 5e 00 00 00       	call   401106 <close_file>
+  4010a8:	48 bf 4b 20 40 00 00 	movabs $0x40204b,%rdi
+  4010af:	00 00 00 
+  4010b2:	e8 57 00 00 00       	call   40110e <delete_file>
+  4010b7:	e9 53 ff ff ff       	jmp    40100f <ever_loop>
+
+00000000004010bc <close_and_try>:
+  4010bc:	48 8b 3c 25 55 20 40 	mov    0x402055,%rdi
+  4010c3:	00 
+  4010c4:	e8 3d 00 00 00       	call   401106 <close_file>
+  4010c9:	e9 41 ff ff ff       	jmp    40100f <ever_loop>
+
+00000000004010ce <after_ever_loop>:
+  4010ce:	48 be 00 20 40 00 00 	movabs $0x402000,%rsi
+  4010d5:	00 00 00 
+  4010d8:	e8 62 00 00 00       	call   40113f <printString>
+  4010dd:	48 be 1f 20 40 00 00 	movabs $0x40201f,%rsi
+  4010e4:	00 00 00 
+  4010e7:	e8 53 00 00 00       	call   40113f <printString>
+  4010ec:	eb 0f                	jmp    4010fd <exit>
+
+00000000004010ee <error>:
+  4010ee:	48 be 44 20 40 00 00 	movabs $0x402044,%rsi
+  4010f5:	00 00 00 
+  4010f8:	e8 42 00 00 00       	call   40113f <printString>
+
+00000000004010fd <exit>:
+  4010fd:	b8 01 00 00 00       	mov    $0x1,%eax
+  401102:	31 db                	xor    %ebx,%ebx
+  401104:	cd 80                	int    $0x80
+
+0000000000401106 <close_file>:
+  401106:	b8 03 00 00 00       	mov    $0x3,%eax
+  40110b:	0f 05                	syscall
+  40110d:	c3                   	ret
+
+000000000040110e <delete_file>:
+  40110e:	b8 57 00 00 00       	mov    $0x57,%eax
+  401113:	0f 05                	syscall
+  401115:	c3                   	ret
+
+0000000000401116 <open_file>:
+  401116:	52                   	push   %rdx
+  401117:	53                   	push   %rbx
+  401118:	51                   	push   %rcx
+  401119:	b8 02 00 00 00       	mov    $0x2,%eax
+  40111e:	be 02 00 00 00       	mov    $0x2,%esi
+  401123:	0f 05                	syscall
+  401125:	59                   	pop    %rcx
+  401126:	5b                   	pop    %rbx
+  401127:	5a                   	pop    %rdx
+  401128:	c3                   	ret
+
+0000000000401129 <read_file>:
+  401129:	53                   	push   %rbx
+  40112a:	51                   	push   %rcx
+  40112b:	b8 00 00 00 00       	mov    $0x0,%eax
+  401130:	0f 05                	syscall
+  401132:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  401136:	7e c5                	jle    4010fd <exit>
+  401138:	c6 04 06 00          	movb   $0x0,(%rsi,%rax,1)
+  40113c:	59                   	pop    %rcx
+  40113d:	5b                   	pop    %rbx
+  40113e:	c3                   	ret
+
+000000000040113f <printString>:
+  40113f:	50                   	push   %rax
+  401140:	51                   	push   %rcx
+  401141:	56                   	push   %rsi
+  401142:	52                   	push   %rdx
+  401143:	57                   	push   %rdi
+  401144:	48 89 f7             	mov    %rsi,%rdi
+  401147:	e8 12 00 00 00       	call   40115e <GetStrlen>
+  40114c:	b8 01 00 00 00       	mov    $0x1,%eax
+  401151:	bf 01 00 00 00       	mov    $0x1,%edi
+  401156:	0f 05                	syscall
+  401158:	5f                   	pop    %rdi
+  401159:	5a                   	pop    %rdx
+  40115a:	5e                   	pop    %rsi
+  40115b:	59                   	pop    %rcx
+  40115c:	58                   	pop    %rax
+  40115d:	c3                   	ret
+
+000000000040115e <GetStrlen>:
+  40115e:	53                   	push   %rbx
+  40115f:	51                   	push   %rcx
+  401160:	50                   	push   %rax
+  401161:	48 31 c9             	xor    %rcx,%rcx
+  401164:	48 f7 d1             	not    %rcx
+  401167:	48 31 c0             	xor    %rax,%rax
+  40116a:	fc                   	cld
+  40116b:	f2 ae                	repnz scas %es:(%rdi),%al
+  40116d:	48 f7 d1             	not    %rcx
+  401170:	48 8d 51 ff          	lea    -0x1(%rcx),%rdx
+  401174:	58                   	pop    %rax
+  401175:	59                   	pop    %rcx
+  401176:	5b                   	pop    %rbx
+  401177:	c3                   	ret

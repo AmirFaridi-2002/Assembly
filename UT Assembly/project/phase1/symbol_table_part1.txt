@@ -1,0 +1,18 @@
+
+part1:     file format elf64-x86-64
+
+SYMBOL TABLE:
+0000000000402000 l       .data	0000000000000000 filename 	     ; part1.txt
+000000000040200a l       .data	0000000000000000 first_num           ; 4671973137
+0000000000402012 l       .data	0000000000000000 second_num          ; 137
+000000000040201a l       .data	0000000000000000 fourth_num
+0000000000402022 l       .data	0000000000000000 fifth_num	     ; 250
+000000000040202a l       .data	0000000000000000 your_info           ; last three digits
+0000000000402032 l       .data	0000000000000000 fd		     ; file discriptor
+000000000040203a l       .data	0000000000000000 first_message	     ; welcome to your easy project :) \n enter your last 3 digit studentnum:
+000000000040207f l       .data	0000000000000000 first_message2      ; enter your studentnum:
+0000000000402097 l       .data	0000000000000000 second_message      ; checking your licence
+00000000004020ad l       .data	0000000000000000 greatjob	     ; Unfortunately you win nerd, here you are:
+00000000004020d9 l       .data	0000000000000000 sorrym   	     ; hahaaaa loserrr ,Try next time, I will waiting for you :)
+0000000000402113 l       .data	0000000000000000 sorry3m	     ; heh you want to cheat? noch noch
+0000000000402134 l       .bss	0000000000000000 buff
