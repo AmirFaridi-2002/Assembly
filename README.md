@@ -9,7 +9,7 @@ This repository contains a set of image processing tools implemented as part of 
 
 ## Features
 
-- **Image Processing Functions**: Includes filters, matrix convolution, and noise addition.
+- **Image Processing Functions**: Includes filters, matrix convolution, and noise addition, etc.
 - **System Call Integration**: Utilizes system calls to open, save files, and execute Python scripts for extended processing.
 
 This project demonstrates practical applications of assembly language in manipulating images at a low level.
